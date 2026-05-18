@@ -1,0 +1,38 @@
+const jwt = require("jsonwebtoken");
+
+const authMiddleware = (req, res, next) => {
+  try {
+
+    // GET TOKEN FROM HEADERS
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+      return res.status(401).json({
+        error: "No token provided",
+      });
+    }
+
+    // TOKEN FORMAT:
+    // Bearer TOKEN
+    const token = authHeader.split(" ")[1];
+
+    // VERIFY TOKEN
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    // SAVE USER DATA IN REQUEST
+    req.user = decoded;
+
+    next();
+
+  } catch (error) {
+
+    return res.status(401).json({
+      error: "Invalid token",
+    });
+  }
+};
+
+module.exports = authMiddleware;
