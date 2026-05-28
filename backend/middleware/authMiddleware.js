@@ -1,19 +1,22 @@
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
+
   try {
 
-    // GET TOKEN FROM HEADERS
+    // GET TOKEN
     const authHeader = req.headers.authorization;
 
+    // CHECK TOKEN EXISTS
     if (!authHeader) {
+
       return res.status(401).json({
-        error: "No token provided",
+        error: "No token provided"
       });
+
     }
 
-    // TOKEN FORMAT:
-    // Bearer TOKEN
+    // REMOVE Bearer
     const token = authHeader.split(" ")[1];
 
     // VERIFY TOKEN
@@ -22,17 +25,23 @@ const authMiddleware = (req, res, next) => {
       process.env.JWT_SECRET
     );
 
-    // SAVE USER DATA IN REQUEST
+    console.log("DECODED:", decoded);
+
+    // SAVE USER
     req.user = decoded;
 
     next();
 
   } catch (error) {
 
+    console.log(error);
+
     return res.status(401).json({
-      error: "Invalid token",
+      error: "Invalid token"
     });
+
   }
+
 };
 
 module.exports = authMiddleware;
